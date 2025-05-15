@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class PlayerServiceImpl implements PlayerService {
@@ -49,8 +51,13 @@ public class PlayerServiceImpl implements PlayerService {
         // TODO: Implementar el método de manera tal que impacte en el usuario el balancImpact pasado por parametro.
         //  Como resultado del guardado debe retornar el usuario nuevamente con el balance actualizado.
         //  Es decir que...->  nuevoBalance = actualBalance + balanceChipsImpact
-
-         return null;
+        PlayerEntity playerEntity = playerJpaRepository.getReferenceById(playerId) ;
+        if(Objects.isNull(playerEntity.getUserName())) {
+            throw new EntityNotFoundException(String.format("The player id %s do not exist", playerId));
+        }
+        playerEntity.setBalanceChips(playerEntity.getBalanceChips().add(balanceChipsImpact));
+        playerJpaRepository.save(playerEntity);
+        return modelMapper.map(playerEntity,Player.class);
     }
 
     @Override
@@ -62,7 +69,13 @@ public class PlayerServiceImpl implements PlayerService {
         //  Ayuda: Usar el metodo userAvailable()
         if(userAvailable(newPlayerRequestDTO.getEmail(), newPlayerRequestDTO.getUserName())) {
             PlayerEntity playerEntity = new PlayerEntity();
-            // TODO: Completar aquí
+            //playerEntity.setId();
+            playerEntity.setUserName(newPlayerRequestDTO.getUserName());
+            playerEntity.setEmail(newPlayerRequestDTO.getEmail());
+            playerEntity.setPassword(newPlayerRequestDTO.getPassword());
+            playerEntity.setBalanceChips(INITIAL_BALANCE);
+            playerEntity.setAvatar(DEFAULT_AVATAR);
+            playerJpaRepository.save(playerEntity);
             return modelMapper.map(playerEntity, PlayerResponseDTO.class);
         } else {
             throw new IllegalArgumentException("The user_name or email already exists");
@@ -72,7 +85,7 @@ public class PlayerServiceImpl implements PlayerService {
     private Boolean userAvailable(String email, String userName) {
         // TODO: Implementar el método de manera tal que valide contra la base de datos que no exista un jugador
         //  con el email o el userName recibidos por paarmetros
-
-        return null;
+        Optional<PlayerEntity> playerEntity = playerJpaRepository.findByUserNameOrEmail(userName,email);
+        return playerEntity.isEmpty();
     }
 }

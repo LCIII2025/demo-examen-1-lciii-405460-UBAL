@@ -301,20 +301,29 @@ public class MatchServiceImpl implements MatchService {
 
     private BigDecimal getCardsValue(List<Card> cardsToSummarize) {
         // TODO: Sumar los valores de todas las cartas recibidas por parametro y retornar el valor de la sumarización
-
-        return null;
+        BigDecimal valor = BigDecimal.valueOf(0);
+        for (Card card: cardsToSummarize){
+            valor.add(card.getValue());
+        }
+        return valor;
     }
 
     private RoundHandStatus calculateRoundHand(BigDecimal cardsValue) {
         // TODO: Retornar RoundHandStatus.EXCEEDED si excede de 7.5, de lo contrario retornar RoundHandStatus.IN_GAME
-
-        return null;
+        if(cardsValue.compareTo(BigDecimal.valueOf(7.5)) < 0){
+            return RoundHandStatus.EXCEEDED;
+        }
+        return RoundHandStatus.IN_GAME;
     }
 
     private RoundHandStatus calculateAppHand(BigDecimal cardsValue) {
         // TODO: Retornar RoundHandStatus.EXCEEDED si excede de 7.5 o RoundHandStatus.STOPPED si excede 5
         //  de lo contrario retornar RoundHandStatus.IN_GAME
-
-        return null;
+        if(cardsValue.compareTo(BigDecimal.valueOf(7.5)) < 0){
+            return RoundHandStatus.EXCEEDED;
+        } else if (cardsValue.compareTo(BigDecimal.valueOf(5)) < 0) {
+            return RoundHandStatus.STOPPED;
+        }
+        return RoundHandStatus.IN_GAME;
     }
 }

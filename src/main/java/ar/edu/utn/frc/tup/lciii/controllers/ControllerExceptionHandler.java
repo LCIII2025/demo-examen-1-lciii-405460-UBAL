@@ -28,7 +28,8 @@ public class ControllerExceptionHandler {
     public ResponseEntity<ErrorApi> handleError(IllegalArgumentException exception) {
         // TODO: Mapear este tipo de excepcion a un ErrorApi, respetando el mensaje pasado
         //  en la exepcion y con http status code 400 (BAD REQUEST)
-        return null;
+        ErrorApi error = buildError(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
